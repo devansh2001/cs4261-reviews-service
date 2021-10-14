@@ -23,7 +23,7 @@ try:
     CREATE TABLE IF NOT EXISTS reviews (
         review_id varchar(64) PRIMARY KEY ,
         review_text varchar(256),
-        review_rating ENUM('0', '1', '2', '3', '4', '5'),
+        review_rating varchar(256),
         provider_id varchar(64),
         consumer_id varchar(256)
     );
@@ -60,13 +60,13 @@ def delete_review(review_id):
     conn.commit()
     return {'status': 200}
 
-@app.route('/get-all-reveiws/<user_id>')
+@app.route('/get-all-reviews/<user_id>')
 def get_all_reviews(user_id):
     query = '''
             SELECT * FROM reviews WHERE provider_id=%s
         '''
     cursor.execute(query, [str(user_id)])
-    res = cursor.fetchAll()
+    res = cursor.fetchall()
     return {'status': 201, 'reviews': publish_reviews(res)}
 
 # Helper functions
