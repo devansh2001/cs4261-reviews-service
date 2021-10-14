@@ -43,6 +43,8 @@ def create_review():
     provider_id = data['provider_id']
     review_text = data['review_text']
     review_rating = data['review_rating']
+    if review_rating not in "12345":
+        return {'status': 400, 'message': "Rating was not a value between 1 and 5"}
     query = '''
         INSERT INTO reviews (review_id, review_text, review_rating, provider_id, consumer_id)
         VALUES (%s, %s, %s, %s, %s)
