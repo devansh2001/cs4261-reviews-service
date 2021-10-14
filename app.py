@@ -73,7 +73,7 @@ def get_all_reviews(user_id):
 
 # Helper functions
 def publish_reviews(reviews):
-    if len(reviews) == 0:
+    if not reviews or len(reviews) == 0:
         return None
     res = []
     for r in reviews:
