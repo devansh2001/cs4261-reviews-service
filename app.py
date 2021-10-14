@@ -1,4 +1,5 @@
 from logging import debug
+
 from flask import Flask, request
 import os
 import psycopg2
@@ -34,10 +35,8 @@ except psycopg2.Error:
 def health_check():
     return {'status': 200}
 
-@app.route('/create-reveiw', methods=['POST'])
+@app.route('/create-review', methods=['POST'])
 def create_review():
-    pass
-    # https://stackoverflow.com/a/67461897
     data = request.get_json()
     review_id = str(uuid.uuid4())
     consumer_id = data['consumer_id']
@@ -52,23 +51,23 @@ def create_review():
     conn.commit()
     return {'status': 201, 'service_id': review_id}
 
-@app.route('/delete-review/<review-id>', methods=['DELETE'])
+@app.route('/delete-review/<review_id>', methods=['DELETE'])
 def delete_review(review_id):
     query = '''
-        DELETE FROM reviews WHERE review_id=%s
+        DELETE FROM reviews WHERE reviews.review_id=%s
     '''
     cursor.execute(query, [str(review_id)])
     conn.commit()
     return {'status': 200}
 
 @app.route('/get-all-reveiws/<user_id>')
-def delete_service(user_id):
+def get_all_reviews(user_id):
     query = '''
             SELECT * FROM reviews WHERE provider_id=%s
         '''
     cursor.execute(query, [str(user_id)])
     res = cursor.fetchAll()
-    return {'status': 200, 'reviews': publish_reviews(res)}
+    return {'status': 201, 'reviews': publish_reviews(res)}
 
 # Helper functions
 def publish_reviews(reviews):
