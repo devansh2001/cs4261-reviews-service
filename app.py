@@ -51,7 +51,7 @@ def create_review():
     '''
     cursor.execute(query, [review_id, review_text, review_rating, provider_id, consumer_id])
     conn.commit()
-    return {'status': 201, 'service_id': review_id}
+    return {'status': 201, 'review_id': review_id}
 
 @app.route('/delete-review/<review_id>', methods=['DELETE'])
 def delete_review(review_id):
@@ -65,7 +65,7 @@ def delete_review(review_id):
 @app.route('/get-all-reviews/<user_id>')
 def get_all_reviews(user_id):
     query = '''
-            SELECT * FROM reviews WHERE provider_id=%s
+            SELECT review_id, consumer_id, provider_id, review_text, review_rating, a.fname, a.lname FROM reviews as r join (SELECT fname, lname, user_id from users) as a on r.consumer_id = a.user_id WHERE provider_id=%s
         '''
     cursor.execute(query, [str(user_id)])
     res = cursor.fetchall()
@@ -79,10 +79,13 @@ def publish_reviews(reviews):
     for r in reviews:
         res.append({
             'review_id': r[0],
-            'review_text': r[1],
-            'review_rating': r[2],
-            'provider_id': r[3],
-            'consumer_id': r[4]
+            'consumer_id': r[1],
+            'provider_id': r[2],
+            'review_text': r[3],
+            'review_rating': r[4],
+            "consumer_fname": r[5],
+            "consumer_lname": r[6]
+
         })
     return res
 
