@@ -5,6 +5,7 @@ import os
 import psycopg2
 import uuid
 import json
+import requests
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -31,6 +32,11 @@ try:
 except psycopg2.Error:
     print('Error occurred while creating table')
 
+
+def add_points(user, points):
+    # Creating API call in Python: https://realpython.com/python-requests/
+    requests.post('https://cs4261-users-service.herokuapp.com/add-points/' + user + '/' + points)
+
 @app.route('/health-check')
 def health_check():
     return {'status': 200}
@@ -51,6 +57,9 @@ def create_review():
     '''
     cursor.execute(query, [review_id, review_text, review_rating, provider_id, consumer_id])
     conn.commit()
+
+    add_points(provider_id, int(review_rating) * 100 / 5.0)
+
     return {'status': 201, 'review_id': review_id}
 
 @app.route('/delete-review/<review_id>', methods=['DELETE'])
